@@ -41,6 +41,8 @@ Now you'll want to include it within your ``urls.py``::
 	    ('^nexus/', include(nexus.site.urls)),
 	)
 
+By default Nexus requires django.contrib.auth and django.contrib.sessions. If you are using a custom auth system you can skip these requirements by using the setting ``NEXUS_SKIP_INSTALLED_APPS_REQUIREMENTS = True`` in your django settings.
+
 Modules
 =======
 
@@ -50,5 +52,8 @@ Other applications which provide Nexus modules:
 
 * `Gargoyle <https://github.com/disqus/gargoyle>`_
 * `Memcache <https://github.com/dcramer/nexus-memcache>`_
+* `Redis <https://github.com/dcramer/nexus-redis>`_
+* `django-debug-logging <https://github.com/lincolnloop/django-debug-logging>`_
+* `Django-Experiments <https://github.com/mixcloud/django-experiments>`_
 
 (docs on writing modules coming soon)

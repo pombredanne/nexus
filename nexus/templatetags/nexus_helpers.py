@@ -1,13 +1,27 @@
 from django import template
-from django.core.urlresolvers import reverse
 from django.utils.datastructures import SortedDict
+
+import nexus
+from nexus import conf
+from nexus.modules import NexusModule
 
 register = template.Library()
 
+
+def nexus_media_prefix():
+    return conf.MEDIA_PREFIX.rstrip('/')
+register.simple_tag(nexus_media_prefix)
+
+
+def nexus_version():
+    return nexus.VERSION
+register.simple_tag(nexus_version)
+
+
 def show_navigation(context):
-    site = context['nexus_site']
-    request = context['request']
-    
+    site = context.get('nexus_site', NexusModule.get_global('site'))
+    request = NexusModule.get_request()
+
     category_link_set = SortedDict([(k, {
         'label': v,
         'links': [],
@@ -15,11 +29,16 @@ def show_navigation(context):
 
     for namespace, module in site._registry.iteritems():
         module, category = module
-        
-        if not module.home_url:
+
+        if module.permission and not request.user.has_perm(module.permission):
             continue
 
-        home_url = reverse(module.get_home_url(), current_app=module.name)
+        home_url = None
+        if 'request' in context:
+            home_url = module.get_home_url(context['request'])
+
+        if not home_url:
+            continue
 
         active = request.path.startswith(home_url)
 
